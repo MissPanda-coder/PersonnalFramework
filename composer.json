@@ -1,0 +1,19 @@
+{
+    "name": "adeli/personnal-framework",
+    "autoload": {
+        "psr-4": {
+            "Adeli\\PersonnalFramework\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Adeline"
+        }
+    ],
+    "require": {
+        "symfony/http-foundation": "^7.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.0"
+    }
+}
