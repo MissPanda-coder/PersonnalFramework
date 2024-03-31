@@ -1,18 +1,11 @@
 <?php
 
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-
-
-
-$request = Request::createFromGlobals();
 
 $name = $request->query->get('name', 'World');
 
-$response = new Response();
 $response->headers->set('Content-Type', 'text/html; charset=UTF-8');
 $response->setContent(sprintf('Hello %s', htmlspecialchars($name, ENT_QUOTES, 'UTF-8')));
-$response->send();
+
 
 // $name = $request->query->get('name', 'World');
 // ce qui revient à cette condition ternaire (quand on a pas le httpFoudation) qui veut dire si la variable $name est remplie, on lui affecte la valeur de $name sinon lui affecte la valeur 'World' par défaut
