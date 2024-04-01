@@ -1,44 +1,40 @@
 <?php
 
-// pour démarrer le serveur dans la terminalphp -S localhost:3000 -t public
+// pour démarrer le serveur dans le terminal php -S localhost:3000 -t public
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Exception\ResourceNotFoundException;
+use Symfony\Component\Routing\Exception\InvalidParameterException;
+use Symfony\Component\Routing\RequestContext;
+use Symfony\Component\Routing\Matcher\UrlMatcher;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-// Crée une instance de la classe Request à partir des données globales
+
 $request = Request::createFromGlobals();
 
-// Crée une nouvelle instance de la classe Response
-$response = new Response();
+$routes = require __DIR__ . '/../src/routes.php';
 
-// Définit une correspondance entre les chemins et les fichiers à inclure
-$map = [
-    '/bonjour' => 'hello.php',
-    '/bye' => 'bye.php',
-    '/a-propos' => 'test/about.php',
-];
+$context = new RequestContext();
+$context->fromRequest($request);
 
-// Récupère le chemin de la requête actuelle
+$urlMatcher = new UrlMatcher($routes, $context);
+
 $pathInfo = $request->getPathInfo();
-
-// Vérifie si le chemin de la requête existe dans la correspondance définie
-if (isset($map[$pathInfo])) {
-    // Démarre la capture de sortie. La gestion de la Bufferisation s'effectue avec la fonction ob_start(). Cette fonction temporise l'envoi du flux (du buffer), de telle sorte qu'on puisse envoyer le buffer d'un seul coup, soit à la fin de notre code (ce qui se fait automatiquement), soit à un moment de notre choix.
+try{
+    $resultat = $urlMatcher->match($pathInfo);
+    extract($resultat);
     ob_start();
-    
-    // Inclut le fichier correspondant au chemin de la requête
-    include __DIR__ . '/../src/pages/' . $map[$pathInfo];
-    
-    // Récupère le contenu de la capture de sortie, puis vide la mémoire tampon
+    include __DIR__ . '/../src/pages/' . $_route . '.php';
+    $response = new Response(ob_get_clean());
+   
     $response->setContent(ob_get_clean());
-} else {
-    // Si le chemin de la requête n'est pas trouvé, définit le code de statut de réponse à 404
-    $response->setStatusCode(404);
-    
-    // Définit le contenu de la réponse à 'Not found'
-    $response->setContent('Not found');
+} catch(ResourceNotFoundException $e) {
+    $response = new Response('Page not found', 404);
+} catch(InvalidParameterException $e) {
+    $response = new Response('Error on the server', 500);
 }
 
-// Envoie la réponse au client
+
+// Envoie la réponse au navigateur
 $response->send();
