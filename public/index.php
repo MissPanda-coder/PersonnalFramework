@@ -4,7 +4,7 @@
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
-use Symfony\Component\Routing\Exception\InvalidParameterException;
+use Symfony\Component\Routing\Exception\Exception;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 
@@ -23,15 +23,12 @@ $urlMatcher = new UrlMatcher($routes, $context);
 $pathInfo = $request->getPathInfo();
 try{
     $resultat = $urlMatcher->match($pathInfo);
-    extract($resultat);
-    ob_start();
-    include __DIR__ . '/../src/pages/' . $_route . '.php';
-    $response = new Response(ob_get_clean());
+    $request ->attributes->add($resultat);
+    $response = call_user_func_array($resultat['_controller'], [$request]);
    
-    $response->setContent(ob_get_clean());
 } catch(ResourceNotFoundException $e) {
     $response = new Response('Page not found', 404);
-} catch(InvalidParameterException $e) {
+} catch(Exception $e) {
     $response = new Response('Error on the server', 500);
 }
 
