@@ -7,8 +7,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class GreetingController{
-    public function hello(Request $request){
-        $name = $request->attributes->get('name');
+    public function hello(Request $request, $name){
+      
     
         //intégrer du HTML
         ob_start();
