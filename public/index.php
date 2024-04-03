@@ -23,7 +23,11 @@ $pathInfo = $request->getPathInfo();
 try{
     $resultat = $urlMatcher->match($pathInfo);
     $request ->attributes->add($resultat);
-    $response = call_user_func($resultat['_controller'], $request);
+    $className = substr($resultat['_controller'], 0, strpos($resultat['_controller'], '::'));  
+    $methodName = substr($resultat['_controller'], strpos($resultat['_controller'], '::') + 2);
+    $controller = [new $className, $methodName];
+    $response = call_user_func($controller, $request);
+
 } catch(ResourceNotFoundException $e) {
     $response = new Response('Page not found', 404);
 } catch(Exception $e) {
