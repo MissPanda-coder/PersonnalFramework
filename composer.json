@@ -2,7 +2,7 @@
     "name": "adeli/personnal-framework",
     "autoload": {
         "psr-4": {
-            "Adeli\\PersonnalFramework\\": "src/"
+            "App\\": "src/"
         }
     },
     "authors": [

@@ -10,7 +10,6 @@ use Symfony\Component\Routing\Matcher\UrlMatcher;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-
 $request = Request::createFromGlobals();
 
 $routes = require __DIR__ . '/../src/routes.php';
@@ -24,8 +23,7 @@ $pathInfo = $request->getPathInfo();
 try{
     $resultat = $urlMatcher->match($pathInfo);
     $request ->attributes->add($resultat);
-    $response = call_user_func_array($resultat['_controller'], [$request]);
-   
+    $response = call_user_func($resultat['_controller'], $request);
 } catch(ResourceNotFoundException $e) {
     $response = new Response('Page not found', 404);
 } catch(Exception $e) {
