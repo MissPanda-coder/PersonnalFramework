@@ -2,6 +2,7 @@
 
 // pour démarrer le serveur dans le terminal php -S localhost:3000 -t public
 
+use Framework\Event\RequestEvent;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,7 +18,6 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-$dispatcher = new EventDispatcher;
 
 
 $request = Request::createFromGlobals();
@@ -29,11 +29,23 @@ $urlMatcher = new UrlMatcher($routes, $context);
 
 $controllerResolver = new ControllerResolver();
 $argumentResolver = new ArgumentResolver();
+
+$dispatcher = new EventDispatcher();
+$dispatcher->addListener('kernel.request', function(RequestEvent $event){
+   $event->getRequest()->attributes->set('prénom', 'Adeline');
+});
+$dispatcher->addListener('kernel.controller', function(){
+    dump("ceci est un test");
+});
+$dispatcher->addListener('kernel.arguments', function(){
+    dump("ceci est un autre test");
+});
+$dispatcher->addListener('kernel.response', function(){
+    dump("ceci est un autre test");
+});
 //outil qu'on crée 
-$framework = new Framework\Simplex($urlMatcher, $controllerResolver, $argumentResolver);
+$framework = new Framework\Simplex($dispatcher, $urlMatcher, $controllerResolver, $argumentResolver);
 
-
-$dispatcher->dispatch(new Event(), 'eventA');
 
 //on lui passe une requête, il nous donne un réponse
 $response = $framework->handle($request);
