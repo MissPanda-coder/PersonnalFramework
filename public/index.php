@@ -34,15 +34,7 @@ $dispatcher = new EventDispatcher();
 $dispatcher->addListener('kernel.request', function(RequestEvent $event){
    $event->getRequest()->attributes->set('prénom', 'Adeline');
 });
-$dispatcher->addListener('kernel.controller', function(){
-    dump("ceci est un test");
-});
-$dispatcher->addListener('kernel.arguments', function(){
-    dump("ceci est un autre test");
-});
-$dispatcher->addListener('kernel.response', function(){
-    dump("ceci est un autre test");
-});
+
 //outil qu'on crée 
 $framework = new Framework\Simplex($dispatcher, $urlMatcher, $controllerResolver, $argumentResolver);
 
